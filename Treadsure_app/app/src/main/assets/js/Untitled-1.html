@@ -1,0 +1,527 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script src="js/aframe.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/semantic.min.css">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        #video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+        }
+        #sky {
+            position: fixed;
+        }
+        #put {
+            position: fixed;
+            left: 0%;
+            bottom: 0;
+            min-width: 5%;
+            min-height: 5%;
+            background-color: transparent;
+        }
+        #pick {
+            position: fixed;
+            right: 0%;
+            bottom: 0;
+            min-width: 5%;
+            min-height: 5%;
+            background-color: transparent;
+        }
+        #point {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 999em;
+            background-color: #EF2D5E;
+            right: 50%;
+            bottom: 55%;
+        }
+        .add_fri {
+            display: none;
+            position: fixed;
+            right: 15%;
+            bottom: 40%;
+        }
+        .add_ads {
+            display: none;
+            position: fixed;
+            right: 15%;
+            bottom: 40%;
+        }
+        #select {
+            display: none;
+            position: fixed;
+            left: 20%;
+            bottom: 10%;
+            min-width: 33%;
+            min-height: 33%;
+        }
+        #mod_info {
+            display: none;
+            position: fixed;
+            right: 15%;
+            bottom: 40%;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script src="Semantic-UI-CSS-master/semantic.min.js"></script>
+</head>
+
+<body>
+    <video id="video" autoplay></video>
+    <a-scene vr-mode-ui="enabled: false">
+        <a-camera id="camera"></a-camera>
+        <a-box visible="false" position="0 2 -5" color="#4CC3D9"></a-box>
+        <a-sphere visible="false" id="ball" position="0 2 -1" radius="0.05"></a-sphere>
+        <a-assets>
+            <a-asset-item id="high_heels" src="./high_heels/scene.gltf"></a-asset-item>
+            <a-asset-item id="buzz" src="./buzz/scene.gltf"></a-asset-item>
+        </a-assets>
+        <a-entity id="dorothy" gltf-model="#high_heels" scale="0.1 0.1 0.1" position="0 2 -5"></a-entity>
+        <a-entity visible="false" id="simon" gltf-model="#buzz" scale="0.06 0.06 0.06" position="-5 2 5"></a-entity>
+
+    </a-scene>
+    <a-sky transparent="True" id="sky"></a-sky>
+    </a-scene>
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+
+    <div id="select">
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="carousel slide" id="carousel-19915">
+                        <ol class="carousel-indicators">
+                            <li data-slide-to="0" data-target="#carousel-19915" class="active">
+                            </li>
+                            <li data-slide-to="1" data-target="#carousel-19915">
+                            </li>
+                            <li data-slide-to="2" data-target="#carousel-19915">
+                            </li>
+                            <li data-slide-to="3" data-target="#carousel-19915">
+                            </li>
+                        </ol>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="d-block w-100" alt="Carousel Bootstrap First" src="1.png" onclick="objform(1)">
+
+                            </div>
+                            <div class="carousel-item">
+                                <img class="d-block w-100" alt="Carousel Bootstrap Second" src="2.png" onclick="objform(2)">
+
+                            </div>
+                            <div class="carousel-item">
+                                <img class="d-block w-100" alt="Carousel Bootstrap Third" src="3.png" onclick="objform(3)">
+
+                            </div>
+                            <div class="carousel-item">
+                                <img class="d-block w-100" alt="Carousel Bootstrap fourth" src="4.png" onclick="objform(4)">
+
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#carousel-19915" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carousel-19915" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+
+
+
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <div id="currentObject"></div>
+    <div id="currentUser"></div>
+    <div id="bug"></div>
+    <div id="mod_id" value="1"></div>
+
+    <button type="button" onclick="b()" id="put">
+        <img src="img/put.png">
+    </button>
+    <button type="button" onclick="a()" id="pick">
+        <img src="img/pick.png">
+    </button>
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <div id="point"></div>
+
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <div class="add_fri" id="fri">
+
+        <div class="ui message">
+            <i class="close icon" onclick="hiddenMessage()"></i>
+            <div class="header" style="font-family:'微軟正黑體'; font-size:150%">
+                dorothy
+                <i class="female icon" style="color:rgb(252, 150, 201)"></i>
+            </div>
+            <br>
+            <p>興趣 :</P>
+            <h5>爬山/遛狗/衝浪</h5>
+            <p>想說的話 :</P>
+            <h5>好想要玩拖曳傘~~</h5>
+            <br>
+            <!--此物件id需要在創建物件時就要給他嵌入 此為直接填入-->
+            <div id="AKQAAZSYRAKFPQSY" class="extra content">
+
+                <button class="ui basic button like addfriend" onclick="hiddenMessage()">
+                    <i class="like icon"></i>
+                    加好友
+                </button>
+                <button class="ui basic button bullhorn report addfriend" onclick="object_report(this.parentNode.id)">
+                    <i class="bullhorn icon"></i>
+                    檢舉
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="add_ads" id="ads">
+
+        <div class="ui message">
+            <i class="close icon" onclick="hiddenMessage1()"></i>
+            <div class="header" style="font-family:'微軟正黑體'; font-size:150%">
+                便宜賣房
+                <i class="tag icon" style="color:cornflowerblue"></i>
+            </div>
+            <br>
+            <p>198坪電梯豪宅 3200萬</p>
+            <p>設施完善，安全無虞</p>
+            <p>歡迎看房!!!</p>
+            <p>地址：吉安鄉農會超市前</p>
+            <br>
+            <!--此物件id需要在創建物件時就要給他嵌入 此為直接填入-->
+            <div id="PZXEFZTFXGNFRBIT" class="extra content">
+
+                <button class="ui basic button like collect" onclick="hiddenMessage1()">
+                    <i class="like icon"></i>
+                    收藏
+                </button>
+                <button class="ui basic button bullhorn report collect" onclick="object_report(this.parentNode.id)">
+                    <i class="bullhorn icon"></i>
+                    檢舉
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+
+    <div class="ui message" id="mod_info">
+        <i class="close icon" onclick="hide_mod_info()"></i>
+        <div class="header" style="font-family:'微軟正黑體'; font-size:150%">
+            你希望留下甚麼資訊?</div>
+        <div class="object">
+            <form name="reg"></form>
+            標題：
+            <input id="ob_title" name="ob_title" type="text" placeholder="請輸入10字以內" required maxlength="10" /><br/> 內容：
+            <input id="ob_content" name="ob_title" type="text" placeholder="請輸入30字以內" /><br/> 類型：
+            <select id="ob_type" name="ob_type" rel="--">
+                <option value="--">--</option>
+                <optgroup>
+                    <option>交友</option>
+                    <option>揪團</option>
+                    <option>其他</option>
+                </optgroup>
+            </select><br/>
+            <button id="OK" onclick="createObject2()">OK</button>
+            <button id="cancel">取消</button>
+            <button id="test" onclick="setModel()">測試</button>
+            <div> </div>
+            </form>
+
+        </div>
+
+    </div>
+    <!-- ////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <Script>
+        //////////////////////////////////////////////////////////////////////////////////////
+        var config = {
+            //apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+            authDomain: "fir-1-2b746.firebaseapp.com",
+            databaseURL: "https://fir-1-2b746.firebaseio.com",
+            projectId: "fir-1-2b746",
+            storageBucket: "fir-1-2b746.appspot.com",
+            messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+        /////////////////////////////////////////////////////////////////////////////////////
+        // Android需要調用的方法
+        var objId, userID;
+        var user, currentstate = '不是朋友', reportstate = "未檢舉", collectionstate = "未收藏";
+        //-------------------接收Android資料--------------------
+        function currentUser(msg) {
+            // 取得使用者ID
+            userID = msg;
+            var userRef = firebase.database().ref().child('User');
+            userRef.on('value', function (usersnapshot) {
+                if (usersnapshot.hasChild(msg)) {
+                    //user = document.getElementById("currentUser");
+                    //user.innerHTML = msg;
+                    var collectionRef = firebase.database().ref().child('Collection').child(msg);
+                    var reportRef = firebase.database().ref().child('Report');
+                    var friendreqRef = firebase.database().ref().child('Friend_req').child(msg);
+                    var friendRef = firebase.database().ref().child('Friends').child(msg);
+                    var objectRef = firebase.database().ref().child('Object');
+                    objectRef.on('value', function (snapshot) {
+                        if (currentstate == '不是朋友') {
+                            $(".like.addfriend").html("");
+                            var text = $(".like.addfriend").html('<i class="like icon"></i>加好友');
+                            $(".like.addfriend").append(text);
+                            var otheruser = snapshot.child('3').child('user').val()
+                            friendreqRef.on('value', function (datasnapshot) {
+                                if (datasnapshot.hasChild(otheruser)) {
+                                    var otheruserID = datasnapshot.child(otheruser);
+                                    if ((otheruserID.child('請求類型').val()) == '送出') {
+                                        currentstate = '已送出邀請';
+                                        $(".like.addfriend").html("");
+                                        var text = $(".like.addfriend").html('<i class="like icon islike"></i>取消邀請');
+                                        $(".like.addfriend").append(text);
+                                    }
+                                    else {
+                                        currentstate = '已接受邀請';
+                                    }
+                                }
+                                else {
+                                    friendRef.on('value', function (datasnapshot) {
+                                        if (datasnapshot.hasChild(otheruser)) {
+                                            currentstate = '朋友'
+                                            $(".like.addfriend").html("");
+                                            var text = $(".like.addfriend").html('<i class="like icon islike"></i>解除好友');
+                                            $(".like.addfriend").append(text);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    objectRef.on('value', function (objsnapshot) {
+                        objsnapshot.forEach(function (objchildSnapshot) {
+                            var key = objchildSnapshot.key;
+                            reportRef.on('value', function (reportsnapshot) {
+                                if (reportsnapshot.hasChild(key)) {
+                                    $("#" + key + " > .report ").html("");
+                                    var text = $("#" + key + " > .report ").html('<i class="bullhorn icon isreport"></i>取消檢舉');
+                                    $("#" + key + " > .report ").append(text);
+                                    reportstate = "已檢舉";
+                                }
+                                else {
+                                    $("#" + key + " > .report ").html("");
+                                    var text = $("#" + key + " > .report ").html('<i class="bullhorn icon"></i>檢舉');
+                                    $("#" + key + " > .report ").append(text);
+                                    reportstate = "未檢舉";
+                                }
+                            });
+                            collectionRef.on('value', function (collectionsnapshot) {
+                                if (collectionsnapshot.hasChild(key)) {
+                                    $("#" + key + " > .like").html("");
+                                    var text = $("#" + key + " > .like").html('<i class="like icon islike"></i>取消收藏');
+                                    $("#" + key + " > .like").append(text);
+                                    collectionstate = "已收藏"
+                                }
+                                else {
+                                    collectionstate = "未收藏"
+                                }
+                            });
+                        });
+                    });
+                }
+                else {
+                    user = document.getElementById("currentUser");
+                    user.innerHTML = msg;
+                }
+            });
+        }
+        ////////////////////////////////////////////////////////////////////////////////////
+        //點擊加好友:取得其他人的userId進行加好友
+        function object_addfriend(otherUserId) {
+            //方法一
+            window.ExtObj_addFriend.responseResult(otherUserId);
+        }
+        //點擊收藏:取得物件id進行收藏
+        function object_collection(objectId) {
+            //方法一
+            window.ExtObj_collection.responseResult(objectId);
+        }
+        //點擊檢舉：取得物件id進行檢舉
+        function object_report(objectId) {
+            window.ExtObj_report.responseResult(objectId);
+        }
+        function clickprompt() {
+            var result = prompt("js://webview?arg1=111&arg2=222");
+            alert("demo " + result);
+        }
+        function clickCreateOb() {
+            var result = prompt("js://createOb?arg1=111&arg2=222");
+            alert("demo " + result);
+        }
+        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var passwordlength = 16;
+        function objIdrandom() {
+            var password = "";
+            var n = 0;
+            var randomnumber = 0;
+            while (n < passwordlength) {
+                n++;
+                randomnumber = Math.floor(characters.length * Math.random());
+                password += characters.substring(randomnumber, randomnumber + 1);
+            }
+            return password;
+        }
+        /////////////////////////////////////////////////////////////////////////////////
+        //大寶
+        ///////////////////////////////////////////////////////////////////////////////////
+        var front = false;
+        var constraints = { video: { facingMode: (front ? "user" : "environment"), width: 800, height: 450 } };
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function (mediaStream) {
+                var video = document.querySelector('video');
+                video.srcObject = mediaStream;
+                video.onloadedmetadata = function (e) {
+                    video.play();
+                };
+            })
+            .catch(function (err) { console.log(err.name + ": " + err.message); });
+        ///////////////////////////////////////////////////////////////////////////
+        var camera = document.querySelector('a-camera');
+        var scene = document.querySelector('a-scene');
+        //////////////////////////////////////////////////////////////////////////////////////
+        window.addEventListener('deviceorientation', function () {
+            var x = camera.object3D.position.x, z = camera.object3D.position.z;
+            var y = 2;
+            var r_y = camera.object3D.rotation.y;// theta/180*pi   
+            var r_x = camera.object3D.rotation.x;
+            if (r_y == 0) {
+                z = z - 5;
+            }
+            else {
+                z = z - 5 * Math.cos(r_y);
+                x = x - 5 * Math.sin(r_y);
+            }
+            y = y + 5 * Math.sin(r_x);
+            var ball = document.querySelector('a-sphere');
+            ball.setAttribute('position', { x: x, y: y, z: z });
+        });
+        function a() {
+            var ball = document.querySelector('a-sphere');
+            var box = document.querySelector('a-box');
+            var b_x = ball.object3D.position.x;
+            var b_y = ball.object3D.position.y;
+            var o_x = box.object3D.position.x;
+            var o_y = box.object3D.position.y;
+            if ((b_x <= o_x + 0.5 && b_x >= o_x - 0.5) && (b_y <= o_y + 0.5 && b_y >= o_y - 0.5)) {
+                openDialog()
+                var dorothy = document.getElementById('dorothy');
+                dorothy.setAttribute('visible', 'false');
+            }
+        }
+        function openDialog() {
+            document.getElementById('ads').style.display = 'block';
+        }
+        function hiddenMessage1() {
+            document.getElementById('ads').style.display = 'none';
+            document.getElementById('fri').style.display = 'block';
+        }
+        function hiddenMessage() {
+            document.getElementById('fri').style.display = 'none';
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        function b() {
+            document.getElementById('select').style.display = 'block';
+        }
+        function objform(mod_id) {
+            document.getElementById('mod_info').style.display = 'block';
+            document.getElementById('mod_id').value = mod_id;
+            //createObject2(mod_id)
+        }
+        function hide_mod_info(){
+            document.getElementById('mod_info').style.display = 'none';
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        var mod_list = ['model1', 'model2', 'model3', 'model4'];
+        function putobj(mod_id) {
+            document.getElementById('select').style.display = 'none';
+            var c_x = camera.object3D.position.x, c_z = camera.object3D.position.z;
+            var c_y = camera.object3D.rotation.y;// theta/180*pi         
+            if (c_y == 0) {
+                c_z = c_z - 5;
+            }
+            else {
+                c_z = c_z - 5 * Math.cos(c_y);
+                c_x = c_x - 5 * Math.sin(c_y);
+            }
+            var mod_name = mod_list(mod_id - 1);
+            var mod_dd = document.getElementById(mod_name);
+            mod_dd.setAttribute('position', { x: c_x, y: 0, z: c_z });
+            mod_dd.setAttribute('visible', 'true');
+        }
+        //////////////////////////////////////////////////////////////////////////////////
+        function createObject2() {
+            // 存使用者ID
+            
+            user = document.getElementById("currentUser");
+            user.innerHTML = userID;
+            // 資訊
+            var title = document.getElementById("ob_title").value;
+            var content = document.getElementById("ob_content").value;
+            var type = document.getElementById("ob_type").value;
+            var id = objIdrandom();
+            var objectRef = firebase.database().ref().child('Object');
+            var model_id = String(document.getElementById('mod_id').value);
+            console.log("模型ID : " + model_id);
+            var object = new Array(title, content, type, id, model_id,lat,lon);
+            window.ExtObj_createObject.responseResult(object);
+            document.getElementById('mod_info').style.display = 'none';
+            putobj(model_id);
+            
+        }
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+var lat,lon;
+var id, options;
+function success(pos) {
+  var crd = pos.coords;
+  lat = String(crd.latitude);
+  lon = String(crd.longitude);
+}
+function error(err) {
+  console.warn('ERROR(' + err.code + '): ' + err.message);
+}
+options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+id = navigator.geolocation.watchPosition(success, error, options);
+    </Script>
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.tracy.treadsure">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_ASSISTED_GPS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
+    <permission
+        android:name="${applicationId}.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="${applicationId}.permission.MAPS_RECEIVE" />
+
+    <application
+        android:name=".MyFirebaseApp"
+        android:allowBackup="true"
+        android:anyDensity="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Message -->
+
+        <service android:name=".FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Facebook -->
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_application_id" />
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/facebook_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBoSYJQwdrIBLOX8QuFpZU240C7GBrE9c0" />
+
+        <activity android:name=".GeneralUser" />
+        <activity android:name=".BusinessUser" />
+        <activity android:name=".ProfileSetting" />
+
+        <!-- User -->
+        <activity
+            android:name=".ARwebView"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".Navigation"
+            android:label="@string/title_activity_navigation"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".Account_setting"
+            android:parentActivityName=".Navigation" />
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".Navigation" />
+        <activity
+            android:name=".Notification"
+            android:parentActivityName=".Navigation" />
+        <activity
+            android:name=".StatusActivity"
+            android:parentActivityName=".Account_setting" />
+        <activity android:name=".ProfileActivity">
+            <intent-filter>
+                <action android:name="com.tracy.a20180324_TARGET_NOTIFICATION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <!-- Store -->
+
+        <activity
+            android:name=".Store_navigation"
+            android:label="@string/title_activity_store_navigation"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".Store_account_setting"
+            android:parentActivityName=".Store_navigation" />
+        <activity android:name=".StoreProfile" />
+        <activity
+            android:name=".Store_StatusActivity"
+            android:parentActivityName=".Store_account_setting" />
+        <activity
+            android:name=".ObjectShow"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity
+            android:name=".AdShow"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity
+            android:name=".CouponShow"
+            android:theme="@android:style/Theme.Holo.Dialog" />
+        <activity android:name=".EditObject"
+            android:theme="@android:style/Theme.Holo.Dialog"></activity>
+    </application>
+
+</manifest>

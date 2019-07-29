@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.min.css">
+        <script
+          src="https://code.jquery.com/jquery-3.1.1.min.js"
+          integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+          crossorigin="anonymous"></script>
+        <script src="semanticui/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    
+    <style>
+        html,body{  
+            margin:0;  
+            padding:0;  
+            height:100%  
+        }  
+        .ui.message {
+            width: 80%;
+          
+            position: absolute;
+  
+        }
+
+        .segment {
+              position: absolute;
+              
+        }
+    
+        .hand {
+
+          float: right;
+        }
+        .ui.basic.button.like {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          margin-right: -0.5px;
+
+        }
+        .ui.basic.button.bullhorn {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          float: right;
+        }
+        
+        p {
+          font-family: "微軟正黑體";
+        }
+
+        .ad {
+          width: 70%;
+          margin-top: 10%;
+          margin-left: 15%;
+        }
+        .square {
+          width: 100px;
+          height: 100px;
+          background: rgb(204, 106, 167);
+        }
+
+
+        </style>
+    <meta charset="utf-8">
+    <script>
+        //專案初始化，Authentication後右方有個網路設定
+        var config = {
+        //apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+        authDomain: "fir-1-2b746.firebaseapp.com",
+        databaseURL: "https://fir-1-2b746.firebaseio.com",
+        projectId: "fir-1-2b746",
+        storageBucket: "fir-1-2b746.appspot.com",
+        messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+
+        // Android需要調用的方法
+        var userID,user;
+
+        //-------------------接收Android資料--------------------
+        function currentUser(msg) {
+            // 取得使用者ID
+            userID = msg;
+            
+        }
+        //-------------------Android執行資料--------------------
+
+
+
+        //-----------------傳遞js資料-----------------------
+        
+
+
+        //--------------------------------------------------
+
+        var characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var passwordlength=16;
+        function objIdrandom() {
+                    
+        var password = "";
+        var n = 0;
+        var randomnumber = 0;
+        while( n < passwordlength ) {
+        n ++;
+        randomnumber = Math.floor(characters.length*Math.random());
+        password += characters.substring(randomnumber,randomnumber + 1);
+        }
+        return password;
+        }
+
+        function createCoupon() {
+
+          var coupon_id = objIdrandom()
+          var coupon_title = document.getElementById("coupon_title").value;
+          var coupon_content = document.getElementById("coupon_content").value;
+
+          //選擇行政區
+          //var coupon_district = document.getElementById("coupon_district").value;
+
+
+          
+          //var coupon = new Array(coupon_title,coupon_content,coupon_id,coupon_district);
+          var coupon = new Array(coupon_title,coupon_content,coupon_id);
+          window.ExtObj_createCoupon.responseResult(coupon);
+        }
+
+        //根據經緯度換算成行政區
+        /*var district;
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=AIzaSyCbCpe2veeZZT-ovYjPpDwS__SuxFg_BAs";
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                district = myArr.results[0].address_components[3].long_name;
+                
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();*/
+
+
+        //載入檔案
+        var img_base64;
+        var loadFile = function (event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var preview = document.getElementById('preview');
+                img_base64 = reader.result;
+                preview.src = img_base64;
+                 
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        };
+        
+        //上傳到資料庫
+        function upload() {
+
+            user = document.getElementById("currentUser");
+            user.innerHTML = userID;
+            var ad_title = document.getElementById("ad_c").value;
+            var ad_content = document.getElementById("ad_content").value;
+            var ad_id = objIdrandom();
+            var storageRef = firebase.storage().ref().child("ad_images");
+            var file = document.getElementById('ad_upload').files[0];
+            var name = ad_id;
+            var metadata = {
+                contentType: file.type
+            };
+            var uploadTask = storageRef.child(name).put(file, metadata);
+
+            uploadTask.on('state_changed',
+            function(snapshot) {
+                //取得進度(bytes)
+                // (在傳送的/總量) * 100 算成百分比
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById("percent").innerHTML = '上傳 ' + progress + '% 完成';
+                switch (snapshot.state) {
+                case 'paused':
+                    document.getElementById("result").innerHTML = "暫停上傳";
+                    break;
+                case 'running':
+                    document.getElementById("result").innerHTML = "上傳進行中";
+                    break;
+                }
+            }, function(error) {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+                case 'storage/unauthorized':
+                document.getElementById("result").innerHTML = "沒有權限";
+                // 沒有權限存取物件
+                break;
+                case 'storage/canceled':
+                document.getElementById("result").innerHTML = "使用者取消";
+                // 使用者取消上傳
+                break;
+                case 'storage/unknown':
+                document.getElementById("result").innerHTML = "不明錯誤";
+                // Unknown error occurred, inspect error.serverResponse
+                break;
+            }
+            }, function() {
+                // 上傳成功
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    
+                    document.getElementById("result").innerHTML = downloadURL;
+                    
+                    
+                    //var ad_object = new Array(ad_title,ad_content,downloadURL,ad_id,lat,lon);
+                    var ad_object = new Array(ad_title,ad_content,downloadURL,ad_id);
+                    window.ExtObj_createAd.responseResult(ad_object);
+                });
+            });
+        };
+    </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+<body>
+
+<div id="currentObject"></div>
+<div id="currentUser"></div>
+<div id="bug"></div>  
+
+<div class="coupon">
+  <form name="reg" >
+    標題：
+    <input id="coupon_title" name="coupon_title" type="text" placeholder="請輸入10字以內" required maxlength="10"/><br/>
+    內容：
+    <input id="coupon_content" name="coupon_content" type="text"  placeholder="請輸入30字以內"/><br/>
+    行政區：
+
+
+    <button id="coupon_OK" onclick="createCoupon()">確定</button>
+    <button id="coupon_cancel" >取消</button>
+    
+  </form>
+
+</div>
+
+<div class="ad">
+    <form name="reg" >
+
+
+      標題：
+      <input id="ad_title" name="ad_title" type="text" placeholder="請輸入10字以內" required maxlength="10"/><br/>
+      內容：
+      <input id="ad_content" name="ad_content" type="text"  placeholder="請輸入30字以內"/><br/>
+      標題：
+      <input id="ad_c" name="ad_content" type="text"  placeholder="請輸入30字以內"/><br/>
+      預覽：
+      <img id="preview" />
+      <br>
+      上傳廣告圖：
+      <input type="file" id="ad_upload" accept="image/*" onchange="loadFile(event)">
+      <br>
+
+      <button id="ad_OK" onclick="upload()">確定</button>
+      <button id="ad_cancel" >取消</button>
+      <br>
+      <p id="percent"></p>
+      <p id="result"></p>
+ 
+    </form>
+
+</div>
+
+  
+
+</body>
+</html>

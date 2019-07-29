@@ -1,0 +1,140 @@
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/semantic.min.css">
+<script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<script src="Semantic-UI-CSS-master/semantic.min.js"></script>
+<script src="js/aframe.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/layout.css">
+<script src="js/noneNblock.js"></script>
+
+<body onload="init()">
+    <div id="lat" value=0></div>
+    <div id="lon" value=0></div>
+    <div id="deltaAlpha" value=0></div>
+
+    <div id="arCam"></div>
+    <div id="vrScene"></div>
+    <div id="point"></div>
+    <div id="putObjForm"></div>
+    <div id="addFriForm"></div>
+    <button type="button" onclick='blockById("sendForm")' id="put">
+        <img src="img/put.png">
+    </button>
+
+    <button type="button" onclick="arrayCreateObj(dataArrayy)" id="updata">
+        <img src="img/updata.png">
+
+        <button type="button" onclick="objCursorEvent()" id="pick">
+            <img src="img/pick.png">
+        </button>
+</body>
+<script src="js/getGPS.js"></script>
+<script src="js/gcs2Gauss.js"></script>
+<script src="js/arInit.js"></script>
+<script src="js/fbInit.js"></script>
+
+
+<script src="js/putObjForm.js" charset="UTF-8"></script>
+
+<script>
+    var deltaAlpharam = 0;
+    var dataArrayy = [];//多一個y
+    var datax = [];
+    var datay = [];
+
+
+
+    var init = () => {
+        datax = [];
+        datay = [];
+        deletDataArray(dataArrayy);
+        var deltaAlpha = document.getElementById("deltaAlpha").value;
+        deltaAlpharam = deltaAlpha;
+        setCamera("camera", deltaAlpharam);
+
+        dataArrayy = updataObj(dataArrayy);//刷新物件列
+        arrayCreateObj(dataArrayy);//新增物件
+
+        console.log("hi");
+    };
+    var setCamera = (id, deltaAlpha) => {
+        var lon = document.getElementById("lon").value;
+        var lat = document.getElementById("lat").value;
+        var XY = gcs2Gauss(lon, lat);
+        var arPosition = rotationMatrix(XY[0], XY[1], deltaAlpha);
+
+        document.getElementById(id).object3D.position.set(-arPosition[0], 0, arPosition[1]);
+    };
+
+    var setRealCoordinate = (id, deltaAlpha) => {
+        //這是說明書
+        var camera = document.getElementById("camera").object3D.position;
+        var lon = document.getElementById("lon").value;
+        var lat = document.getElementById("lat").value;
+        var XY = gcs2Gauss(lon, lat);
+        var arPosition = rotationMatrix(x, y, deltaAlpha);
+
+        document.getElementById(id).object3D.position.set(-arPosition[0] + camera.x, 0, arPosition[1] + camera.z);
+    };
+
+    var arrayCreateObj = (dataArray) => {
+        for (var i = 0; i < dataArray.length; i++) {
+            setPosition(dataArray[i].x, dataArray[i].y, dataArray[i].objid, dataArray[i].module, deltaAlpharam);
+        }
+    };
+    var deletDataArray = (dataArray) => {
+        for (var i = 0; i < dataArray.length; i++) {
+            deletAnyObj(dataArray[i].objid);
+        }
+
+    };
+
+    var deletAnyObj = (id) => {
+        try {
+            var scene = document.getElementById("scene");
+            scene.removeChild(document.getElementById(id));
+        } catch (e) {
+            console.log("i dont know what happen");
+        }
+
+    };
+    let setPosition = (x, y, id, modClass, deltaAlpha) => {//obj
+        var camera = document.getElementById("camera").object3D.position;
+        var scene = document.getElementById("scene");
+        var arPosition = rotationMatrix(x, y, deltaAlpha);//
+        var obj = document.createElement("a-entity");
+        scene.appendChild(obj);
+        obj.setAttribute("id", id);
+        var modname = (modClass == 1) ? "#bulbasaur" : (modClass == 2) ? "#geodude" : (modClass == 3) ? "#poliwhirl" : "#bulbasaur";
+        var scale = (modClass == 1) ? "1 1 1" : (modClass == 2) ? "0.5 0.5 0.5" : (modClass == 3) ? "0.3 0.3 0.3" : "0.3 0.3 0.3";
+
+        obj.setAttribute("gltf-model", modname);
+        obj.setAttribute("scale", scale);
+        datax.push(-arPosition[0]);
+        datay.push(arPosition[1]);
+        document.getElementById(id).object3D.position.set(-arPosition[0] + camera.x, 0, arPosition[1] + camera.z);
+    };
+    var objCursorEvent = () => {
+        for (var i = 0; i < dataArrayy.length; i++) {
+            (cursor(datax[i], datay[i])) ? showObjImfo(dataArrayy[i]) : doNothing();
+        }
+    }
+    var showObjImfo = (objImfo) => {
+        var addfri = '<div id="add_fri"> <div class="ui message"> <i class="close icon" onclick="deletAddFriForm()"></i> <div class="header" style="font-family:微軟正黑體; font-size:150%"> 大寶 <i class="female icon" style="color:rgb(252, 150, 201)"></i> </div> <br>';
+        addfri = addfri + '<p>' + objImfo.title + '</p><br>' + '<h5>' + objImfo.content + '</h5>';
+        addfri = addfri + '<div id="AKQAAZSYRAKFPQSY" class="extra content"> <button id="'+objImfo.user+'"class="ui basic button like addfriend" onclick="object_addfriend(this.id)"> <i class="like icon"></i> 加好友 </button> <button id="'+objImfo.objid+'"class="ui basic button bullhorn report addfriend" onclick="object_report(this.id)"> <i class="bullhorn icon"></i> 檢舉 </button> </div> </div> </div>';
+        document.getElementById("addFriForm").innerHTML = addfri;
+    };
+
+    var deletAddFriForm = () => {
+        var addFriForm = document.getElementById("addFriForm");
+        addFriForm.removeChild(document.getElementById("add_fri"));
+    };
+
+    init();
+    
+    setTimeout(init(), 10000);
+</script>

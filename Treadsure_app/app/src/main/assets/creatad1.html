@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="Semantic-UI-CSS-master/semantic.css">
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    
+    <script src="js/aframe.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/layout.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.1.0/exif.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image-scale.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image-orientation.min.js"></script>
+
+    <style>
+        #video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+        }
+
+        #scene {
+            position: fixed;
+            display: block;
+        }
+
+        #put {
+
+            position: fixed;
+            left: 0%;
+            bottom: 0;
+            min-width: 5%;
+            min-height: 5%;
+            background-color: transparent;
+        }
+
+        #pick {
+            position: fixed;
+            right: 0%;
+            bottom: 0;
+            min-width: 5%;
+            min-height: 5%;
+            background-color: transparent;
+        }
+
+        #ad {
+            display: none;
+            position: fixed;
+            right: 10%;
+
+            width: 80%;
+            bottom: 10%;
+
+        }
+
+        #wtf {
+            display: none;
+            position: fixed;
+            right: 10%;
+
+            width: 80%;
+            bottom: 10%;
+
+        }
+    </style>
+    <meta charset="utf-8">
+
+
+</head>
+
+
+
+
+<div id="lat" value=0></div>
+<div id="lon" value=0></div>
+<div id="deltaAlpha" value=0></div>
+<div id="arCam"></div>
+<div id="vrScene"></div>
+<button type="button" onclick='blockById("ad")' id="put">
+    <img src="img/billboard.png">
+</button>
+<button type="button" onclick='blockById("wtf")' id="pick">
+    <img src="img/discount.png">
+</button>
+
+<div id="currentObject"></div>
+<div id="currentUser"></div>
+<div id="bug"></div>
+
+<div id="wtf" class="coupon" style="font-family:微軟正黑體">
+    <div class="ui message" style="font-family:微軟正黑體">
+        <i class="close icon" onclick='noneById("wtf")'></i>
+        <div class="header" style="font-family:微軟正黑體 ; font-size:150%"> 優惠券資訊
+        </div>
+        <br>
+        <form class="ui form" name="reg">
+            標題：
+            <input class="ui input" id="coupon_title" name="coupon_title" type="text" placeholder="請輸入10字以內" required maxlength="10"
+            />
+            <br/> 內容：
+            <input class="ui input" id="coupon_content" name="coupon_content" type="text" placeholder="請輸入30字以內" />
+            <br/> 行政區：
+            <div class="field" style="font-family:微軟正黑體 ;">
+                <select id="coupon_district" class="ui fluid dropdown" style="font-family:微軟正黑體;">
+                    <option value="">請選擇行政區</option>
+                    <option value="1">臺北市</option>
+                    <option value="2">新北市</option>
+                    <option value="3">基隆市</option>
+                    <option value="4">桃園市</option>
+                    <option value="5">新竹縣</option>
+                    <option value="6">新竹市</option>
+                    <option value="7">苗栗縣</option>
+                    <option value="8">臺中市</option>
+                    <option value="9">南投縣</option>
+                    <option value="10">彰化縣</option>
+                    <option value="11">雲林縣</option>
+                    <option value="12">嘉義縣</option>
+                    <option value="13">嘉義市</option>
+                    <option value="14">臺南市</option>
+                    <option value="15">高雄市</option>
+                    <option value="16">屏東縣</option>
+                    <option value="17">宜蘭縣</option>
+                    <option value="18">花蓮縣</option>
+                    <option value="19">臺東縣</option>
+                    <option value="20">澎湖縣</option>
+                    <option value="21">金門縣</option>
+                    <option value="23">連江縣</option>
+                </select>
+            </div>
+            <br>
+            <button class="ui primary button" id="coupon_OK" onclick="createCoupon()">確定</button>
+            <button class="ui basic button" onclick='noneById("wtf")' id="coupon_cancel">取消</button>
+
+        </form>
+
+    </div>
+</div>
+
+
+<div id="ad">
+    <div class="ui message" style="font-family:微軟正黑體">
+        <i class="close icon" onclick='noneById("ad")'></i>
+        <div class="header" style="font-family:微軟正黑體 ; font-size:150%"> 你希望留下甚麼資訊?
+        </div>
+        <br>
+        <form class="ui form" name="reg" style="font-family:微軟正黑體">
+            標題：
+            <input class="ui input" id="ad_title" name="ad_title" type="text" placeholder="請輸入10字以內" required maxlength="10" />
+            <br/> 內容：
+            <input class="ui input" id="ad_content" name="ad_content" type="text" placeholder="請輸入30字以內" />
+            <br/>
+        </form>
+        <br>
+        <img id="preview" style="max-width: 50%; height: auto;">
+        <br>
+        <br> 上傳廣告圖：
+        <br>
+        <label for="file" class="ui icon button" style="font-family:微軟正黑體">
+            <i class="file icon"></i>
+            選擇檔案</label>
+        <input type="file" id="file" accept="image/*" onchange="loadFile(event)" style="display:none">
+        <br>
+        <br>
+        <button class="ui primary button" id="ad_OK" onclick="upload()" style="font-family:'微軟正黑體';">確定</button>
+        <button class="ui instagram button" onclick="btn()" style="font-family:微軟正黑體">預覽</button>
+        <button class="ui basic button" onclick="cancel()" id="ad_cancel" style="font-family:微軟正黑體">取消</button>
+        <br>
+        <p id="percent"></p>
+        <p id="result"></p>
+
+
+
+    </div>
+</div>
+
+
+</body>
+
+<script src="js/getGPS.js"></script>
+<script src="js/gcs2Gauss.js"></script>
+<script src="js/arInit.js"></script>
+<script src="js/fbInit.js"></script>
+<script src="js/noneNblock.js"></script>
+<script>
+
+    var userID;
+
+
+
+
+
+
+
+    //載入檔案
+    var img_base64;
+    var img_base64_mirror;
+
+    var loadFile = function (event) {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var preview = document.getElementById('preview');
+                img_base64 = reader.result;
+                preview.src = img_base64;
+
+                window.loadImage(preview.src, function (img) {
+                    if (img.type === "error") {
+                        console.log("無法載入:", img);
+                    } else {
+                        window.EXIF.getData(img, function () {
+                            var orientation = EXIF.getTag(this, "Orientation");
+                            var canvas = window.loadImage.scale(img, { orientation: orientation || 4, canvas: true });
+                            //var p = document.getElementById('preview2');
+                            img_base64_mirror = canvas.toDataURL();
+                            //p.src = img_base64_mirror;
+
+                        });
+                    }
+                });
+
+
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    };
+
+    //上傳到資料庫
+    function upload() {
+
+
+        var ad_title = document.getElementById("ad_title").value;
+        var ad_content = document.getElementById("ad_content").value;
+
+        var storageRef = firebase.storage().ref().child("ad_images");
+        var file = document.getElementById('file').files[0];
+        var name = randomWord(false, 16);
+        var metadata = {
+            contentType: file.type
+        };
+        var uploadTask = storageRef.child(name).put(file, metadata);
+
+        uploadTask.on('state_changed',
+            function (snapshot) {
+                //取得進度(bytes)
+                // (在傳送的/總量) * 100 算成百分比
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                document.getElementById("percent").innerHTML = '上傳 ' + progress + '% 完成';
+                switch (snapshot.state) {
+                    case 'paused':
+                        document.getElementById("result").innerHTML = "暫停上傳";
+                        break;
+                    case 'running':
+                        document.getElementById("result").innerHTML = "上傳進行中";
+                        break;
+                }
+            }, function (error) {
+                // A full list of error codes is available at
+                // https://firebase.google.com/docs/storage/web/handle-errors
+                switch (error.code) {
+                    case 'storage/unauthorized':
+                        document.getElementById("result").innerHTML = "沒有權限";
+                        // 沒有權限存取物件
+                        break;
+                    case 'storage/canceled':
+                        document.getElementById("result").innerHTML = "使用者取消";
+                        // 使用者取消上傳
+                        break;
+                    case 'storage/unknown':
+                        document.getElementById("result").innerHTML = "不明錯誤";
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                }
+            }, function () {
+                // 上傳成功
+                uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+
+                    //document.getElementById("result").innerHTML = downloadURL;
+
+                    var lat = document.getElementById("lat").value;
+                    var lon = document.getElementById("lon").value;
+                    if (lat == 0) {
+                        alert("GPS錯誤");
+                    }
+                    var XY = gcs2Gauss(lon, lat);
+                    var ad_id = randomWord(false, 10);
+                    var ad_object = new Array(ad_title, ad_content, downloadURL, ad_id, lat, lon);
+                    let oid = randomWord(false, 16);
+                    firebase.database().ref('AdObject/' + oid).set({
+
+                        Latitude: lat,
+                        Longitude: lon,
+                        content: ad_content,
+                        date: firebase.database.ServerValue.TIMESTAMP,
+                        title: ad_title,
+                        image: downloadURL,
+                        user: userID,
+                        x: XY[0],
+                        y: XY[1]
+
+                    });
+                    alert("創建成功");
+                    document.getElementById(id).style.display = 'none';
+                });
+            });
+    };
+    function createCoupon() {
+
+        var coupon_id = randomWord(false, 16);
+        var coupon_title = document.getElementById("coupon_title").value;
+        var coupon_content = document.getElementById("coupon_content").value;
+
+        //選擇行政區
+        var coupon_district = document.getElementById("coupon_district").value;
+
+
+
+        var coupon = new Array(coupon_title, coupon_content, coupon_id, coupon_district);
+        //var coupon = new Array(coupon_title,coupon_content,coupon_id);
+        window.ExtObj_createCoupon.responseResult(coupon);
+        noneById("wtf");
+    }
+    var btn = () => {
+        gltf_img = img_base64_mirror;
+        gltf_bin = "https://simondagg.github.io/webar/gltf_test/simple/scene.bin";
+        gltf_json = '{"accessors":[{"bufferView":2,"componentType":5126,"count":4,"max":[21.761878967285156,-0.35592755675315857,12.591880798339844],"min":[9.9999980926513672,-0.35592794418334961,3.7575817108154297],"type":"VEC3"},{"bufferView":2,"byteOffset":48,"componentType":5126,"count":4,"max":[0,-1,-4.3855227005451525e-08],"min":[0,-1,-4.3855227005451525e-08],"type":"VEC3"},{"bufferView":3,"componentType":5126,"count":4,"max":[1,0,0,1],"min":[1,0,0,1],"type":"VEC4"},{"bufferView":3,"byteOffset":64,"componentType":5126,"count":4,"max":[1,1,1,1],"min":[1,1,1,1],"type":"VEC4"},{"bufferView":1,"componentType":5126,"count":4,"max":[1,1],"min":[0,0],"type":"VEC2"},{"bufferView":0,"componentType":5125,"count":6,"max":[3],"min":[0],"type":"SCALAR"},{"bufferView":2,"byteOffset":96,"componentType":5126,"count":4,"max":[21.76936149597168,-1.6421401483057707e-07,12.593308448791504],"min":[9.9873237609863281,-5.5047098612703849e-07,3.756779670715332],"type":"VEC3"},{"bufferView":2,"byteOffset":144,"componentType":5126,"count":4,"max":[0,-1,-4.3711391839451608e-08],"min":[0,-1,-4.3711391839451608e-08],"type":"VEC3"},{"bufferView":3,"byteOffset":128,"componentType":5126,"count":4,"max":[1,0,0,1],"min":[1,0,0,1],"type":"VEC4"},{"bufferView":3,"byteOffset":192,"componentType":5126,"count":4,"max":[1,1,1,1],"min":[1,1,1,1],"type":"VEC4"},{"bufferView":0,"byteOffset":24,"componentType":5125,"count":6,"max":[3],"min":[0],"type":"SCALAR"},{"bufferView":2,"byteOffset":192,"componentType":5126,"count":90,"max":[22.171236038208008,-1.5039951506423677e-07,12.913398742675781],"min":[9.6864051818847656,-0.72304564714431763,-1.3346500396728516],"type":"VEC3"},{"bufferView":2,"byteOffset":1272,"componentType":5126,"count":90,"max":[1,1,1],"min":[-1,-1,-1],"type":"VEC3"},{"bufferView":3,"byteOffset":256,"componentType":5126,"count":90,"max":[1,1,1,1],"min":[-1,-1,-1,1],"type":"VEC4"},{"bufferView":3,"byteOffset":1696,"componentType":5126,"count":90,"max":[1,1,1,1],"min":[1,1,1,1],"type":"VEC4"},{"bufferView":0,"byteOffset":48,"componentType":5125,"count":126,"max":[89],"min":[0],"type":"SCALAR"}],"asset":{"extras":{"author":"daviddickball(https://sketchfab.com/daviddickball)","license":"CC-BY-4.0(http://creativecommons.org/licenses/by/4.0/)","source":"https://sketchfab.com/models/7d0d36fbf16e4cc2b62970c49dac3c31","title":"SimpleLow-polyBillboard(4:3)"},"generator":"Sketchfab-3.29.3","version":"2.0"},"bufferViews":[{"buffer":0,"byteLength":552,"byteOffset":0,"name":"floatBufferViews","target":34963},{"buffer":0,"byteLength":32,"byteOffset":552,"byteStride":8,"name":"floatBufferViews","target":34962},{"buffer":0,"byteLength":2352,"byteOffset":584,"byteStride":12,"name":"floatBufferViews","target":34962},{"buffer":0,"byteLength":3136,"byteOffset":2936,"byteStride":16,"name":"floatBufferViews","target":34962}],"buffers":[{"byteLength":6072,"uri":"' + gltf_bin + '"}],"images":[{"uri":"' + gltf_img + '"}],"materials":[{"doubleSided":true,"emissiveFactor":[0,0,0],"name":"material_0","pbrMetallicRoughness":{"baseColorFactor":[0.5,0.5,0.5,1],"metallicFactor":0,"roughnessFactor":0.59999999999999998}},{"doubleSided":true,"emissiveFactor":[0,0,0],"name":"02_-_Default","pbrMetallicRoughness":{"baseColorFactor":[0.92156899999999997,0.92156899999999997,0.92156899999999997,1],"metallicFactor":0,"roughnessFactor":0.59999999999999998}},{"doubleSided":true,"emissiveFactor":[0,0,0],"name":"material","pbrMetallicRoughness":{"baseColorFactor":[1,1,1,1],"baseColorTexture":{"index":0,"texCoord":0},"metallicFactor":0,"roughnessFactor":0.59999999999999998}}],"meshes":[{"primitives":[{"attributes":{"COLOR_0":3,"NORMAL":1,"POSITION":0,"TANGENT":2,"TEXCOORD_0":4},"indices":5,"material":2,"mode":4}]},{"primitives":[{"attributes":{"COLOR_0":9,"NORMAL":7,"POSITION":6,"TANGENT":8},"indices":10,"material":0,"mode":4}]},{"primitives":[{"attributes":{"COLOR_0":14,"NORMAL":12,"POSITION":11,"TANGENT":13},"indices":15,"material":1,"mode":4}]}],"nodes":[{"children":[1],"name":"RootNode(gltforientationmatrix)","rotation":[-0.70710678118654746,-0,-0,0.70710678118654757]},{"children":[2],"name":"RootNode(modelcorrectionmatrix)"},{"children":[3,6,9],"name":"simplebillboard43.3DS"},{"children":[4],"matrix":[1,0,0,0,0,0,1,0,0,-1,0,0,16.009878158569336,-3.4020638395304559e-07,7.7830142974853516,1],"name":"Object01"},{"children":[5],"matrix":[1,0,0,0,0,-4.3711388286737843e-08,-0.999999999999998,0,0,0.999999999999998,-4.3711388286737843e-08,0,-16.009878158569336,-7.7830142974853507,-2.3954430561530515e-14,1],"name":"3DSMeshMatrix"},{"mesh":0,"name":""},{"children":[7],"matrix":[0.29455095529556274,0,0,0,0,0,0.29455095529556274,0,0,-0.29455095529556274,0,0,15.878342628479004,-3.5734248626795306e-07,8.175044059753418,1],"name":"Plane01"},{"children":[8],"matrix":[3.3949983254902869,0,0,0,0,-1.4840009430789193e-07,-3.3949983254902807,0,0,3.3949983254902807,-1.4840009430789193e-07,0,-53.906946635247259,-27.754260893672175,1.6693234459028334e-13,1],"name":"3DSMeshMatrix"},{"mesh":1,"name":""},{"children":[10],"matrix":[1,0,0,0,0,0,1,0,0,-1,0,0,16.009878158569336,-3.4020638395304559e-07,7.7830142974853516,1],"name":"Box01"},{"children":[11],"matrix":[1,0,0,0,0,-4.3711388286737843e-08,-0.999999999999998,0,0,0.999999999999998,-4.3711388286737843e-08,0,-16.009878158569336,-7.7830142974853507,-2.3954430561530515e-14,1],"name":"3DSMeshMatrix"},{"mesh":2,"name":""}],"samplers":[{"magFilter":9729,"minFilter":9987,"wrapS":10497,"wrapT":10497}],"scene":0,"scenes":[{"name":"OSG_Scene","nodes":[0]}],"textures":[{"sampler":0,"source":0}]}';
+        gltf_base64 = window.btoa(unescape(encodeURIComponent(gltf_json)));
+
+        var scene = document.getElementById("scene");
+        var assets = document.getElementById("assets");
+        var ad = document.createElement("a-asset-item");
+        assets.appendChild(ad);
+        ad.setAttribute("id", "ad");
+        ad.setAttribute('src', "data:model/gltf+json;;base64, " + gltf_base64);
+        var scene = document.getElementById("scene");
+        var gp03 = document.createElement("a-entity");
+        scene.appendChild(gp03);
+        gp03.setAttribute("id", "gp03");
+        gp03.setAttribute("gltf-model", "#ad");
+
+        setAd("gp03");
+    };
+
+    var setAd = (id) => {
+        var camera = document.getElementById("camera");
+        var c_x = camera.object3D.position.x, c_z = camera.object3D.position.z;
+        var c_y = camera.object3D.rotation.y;
+        c_z = c_z - 16 * Math.cos(c_y);
+        c_x = c_x - 16 * Math.sin(c_y);
+        document.getElementById(id).object3D.position.set(c_x - 16, 0, c_z);
+    };
+
+
+    var cancel = () => {
+        try {
+            var scene = document.getElementById("scene");
+            scene.removeChild(document.getElementById("gp03"));
+        } catch (e) {
+            console.log("i dont know what happen");
+        }
+
+    }
+</script>
+
+
+</html>

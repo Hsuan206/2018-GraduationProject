@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+        }
+        #sky {
+            position: fixed;
+        }
+    </style>
+    <script src="js/aframe.min.js"></script>
+    <script src="js/han2.js"></script>
+</head>
+
+<body>
+    <video id="video" autoplay></video>
+    <a-scene vr-mode-ui="enabled: false">
+
+        
+        <a-camera id="camera"  ></a-camera>
+        <a-assets>
+            <a-asset-item id="mi" src="./gltf/miku/scene.gltf"></a-asset-item>
+        </a-assets>
+        <a-entity id="miku" gltf-model="#mi"  scale="0.15 0.15 0.15" ></a-entity>
+    </a-scene>
+    <a-sky transparent="True" id="sky"></a-sky>
+    </a-scene>
+    
+</body>
+
+</html>

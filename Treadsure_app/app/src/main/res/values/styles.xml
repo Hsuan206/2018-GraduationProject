@@ -1,0 +1,70 @@
+<resources>
+
+    <style name="UnityThemeSelector" parent="android:Theme.Light.NoTitleBar.Fullscreen">
+    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:actionMenuTextColor">#236089</item>
+        <item name="colorControlNormal">#808080</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="textColorError">#ea2283</item>
+
+    </style>
+    <style name="FrontPage" parent="AppTheme">
+
+        <item name="android:windowBackground">@mipmap/background</item>
+
+
+    </style>
+
+
+
+    <style name="FrontPage.TextInputLayout">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginTop">70dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+    <style name="FrontPage.Button">
+
+        <item name="android:background">@drawable/default_button</item>
+
+    </style>
+
+
+
+    <style name="AppTheme.NoActionBar">
+        <!--隐藏ActionBar-->
+        <item name="windowActionBar">false</item>
+        <!--不显示标题-->
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme0" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">#17BDA1</item>
+    </style>
+
+    <style name="Theme1" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">#666FA1</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <!-- 設定Tab字型大小-->
+    <style name="MineCustomTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">9sp</item>
+    </style>
+
+
+    <style name="DialogStyle" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">60%</item>
+        <item name="android:windowMinWidthMinor">60%</item>
+        <item name="android:textColorPrimary">#808080</item>
+        <item name="colorAccent">@color/text_color_primary</item>
+    </style>
+
+</resources>

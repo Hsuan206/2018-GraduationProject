@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <style>
+        html,body{  
+            margin:0;  
+            padding:0;  
+            height:100%  
+        }  
+        .ui.message {
+          width: 80%;
+          margin-top: 30%;
+          margin-left: 10%;
+
+
+        }
+    
+        .hand {
+
+          float: right;
+        }
+        .ui.basic.button.like {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          margin-right: -0.5px;
+
+        }
+        .ui.basic.button.bullhorn {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          float: right;
+        }
+        .islike{
+          color: red;
+        }
+        .isreport{
+            color:dodgerblue;
+        }
+        p {
+          font-family: "微軟正黑體";
+        }
+
+        .object {
+          width: 70%;
+          margin-top: 10%;
+          margin-left: 15%;
+        }
+        .square {
+          width: 100px;
+          height: 100px;
+          background: rgb(204, 106, 167);
+        }
+
+
+        </style>
+    <meta charset="utf-8">
+    <script>
+        //專案初始化，Authentication後右方有個網路設定
+        var config = {
+        apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+        authDomain: "fir-1-2b746.firebaseapp.com",
+        databaseURL: "https://fir-1-2b746.firebaseio.com",
+        projectId: "fir-1-2b746",
+        storageBucket: "fir-1-2b746.appspot.com",
+        messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+
+        function currentUser(msg) {
+        user = document.getElementById("currentUser");
+        user.innerHTML = msg;
+        }
+        //-----------------傳遞js資料-----------------------
+        
+    
+        //點擊檢舉：取得物件id進行檢舉
+        function object_report(objectId) {
+
+            window.ExtObj_report.responseResult(objectId);
+        }
+        function createObject() {
+ 
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition);
+            } else {
+               //
+            }
+
+        }
+        
+        function showPosition(position) {
+        
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var title = document.getElementById("ob_title").value;
+            var content = document.getElementById("ob_content").value;
+            var type = document.getElementById("ob_type").value; 
+            //此物件ID日後設給物件就好
+            var id = objIdrandom();
+
+            var object = new Array(title,content,type,latitude.toString(),longitude.toString(),id);
+            window.ExtObj_createObject.responseResult(object);
+        }
+        /*function callAndroid(){
+            //對象映射，調用test等於調用Android
+                test.hello("JS調用了android中的hello方法");
+            }
+*/
+    
+        var characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var passwordlength=16;
+        function objIdrandom() {
+            
+            var password = "";
+            var n = 0;
+            var randomnumber = 0;
+            while( n < passwordlength ) {
+            n ++;
+            randomnumber = Math.floor(characters.length*Math.random());
+            password += characters.substring(randomnumber,randomnumber + 1);
+            }
+            return password;
+        }
+        
+        </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+<body>
+<script>
+                
+                
+    </script>
+
+
+<div id="currentUser"></div> 
+
+<div class="ui message">
+    <i class="close icon" onclick="hiddenMessage()"></i>
+    <div class="header" style="font-family:'微軟正黑體'; font-size:150%">   
+     便宜賣房
+     <i class="tag icon" style="color:cornflowerblue"></i>
+    </div>
+    <br>
+    <p>198坪電梯豪宅</p>
+    <p>設施完善，安全無虞</p>
+    <p>歡迎看房!!!</p>
+    <p>地址：吉安鄉農會超市前</p>
+    <br>
+    <!--此物件id需要在創建物件時就要給他嵌入 此為直接填入-->
+    <div id="ZPFTRWMKMQBCBRUH" class="extra content">
+        
+        <button class="ui basic button like collect" >
+            <i class="like icon"></i>
+            收藏
+        </button>
+        <button class="ui basic button bullhorn report collect" onclick="object_report(this.parentNode.id)" >
+            <i class="bullhorn icon"></i>
+            檢舉
+        </button> 
+    </div>
+    
+</div>
+<div class="object">
+    <form name="reg" ></form>
+      標題：
+      <input id="ob_title" name="ob_title" type="text" placeholder="請輸入10字以內" required maxlength="10"/><br/>
+      內容：
+      <input id="ob_content" name="ob_title" type="text"  placeholder="請輸入30字以內"/><br/>
+      類型：
+      <select id="ob_type" name="ob_type" rel="--">
+        <option value="--">--</option>
+        <optgroup>
+          <option>交友</option>
+          <option>揪團</option>
+          <option>其他</option>
+        </optgroup>
+      </select><br/>
+      <button id="OK" onclick="createObject()">OK</button>
+      <button id="cancel" onclick="createObject()">取消</button>
+      <div> </div>
+    </form>
+  </div>
+  
+
+</body>
+</html>

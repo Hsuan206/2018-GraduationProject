@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <style>
+        .ui.message {
+          width: 70%;
+          margin-top: 10%;
+          margin-left: 15%;
+
+
+        }
+        .hand {
+
+          float: right;
+        }
+        .ui.basic.button.like {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          margin-right: -0.5px;
+
+        }
+        .ui.basic.button.bullhorn {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          float: right;
+        }
+        .islike{
+          color: red;
+        }
+        p {
+          font-family: "微軟正黑體";
+        }
+
+
+
+        </style>
+    <meta charset="utf-8">
+    <script>
+        // Android需要調用的方法
+        function callJS(){
+
+          
+        }
+
+        function clickprompt(){
+            var result = prompt("js://webview?arg1=111&arg2=222");
+            alert("demo " + result);
+        }
+        function store_object(){
+          
+          var add_btn = document.getElementById("like");
+
+          if((add_btn.textContent).indexOf(" 收藏")>-1) {
+
+            add_btn.innerHTML="";
+            var para = document.createElement("i");
+            para.className="like icon";
+            add_btn.appendChild(para);
+            var text = document.createTextNode("取消收藏");
+            add_btn.appendChild(text);
+          }
+          else {
+            add_btn.innerHTML="";
+            var para = document.createElement("i");
+            para.className="like icon islike";
+            add_btn.appendChild(para);
+            var text = document.createTextNode(" 收藏");
+            add_btn.appendChild(text);
+          }
+
+          return "XIJLWJLJWELJEL54";
+    
+        }
+
+        </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+<body>
+<script>
+                $(document).ready(function(){
+                  $(".ui .close").click(function(){
+                      $(this)
+                        .closest('.message')
+                        .transition('fade');
+                  });
+                  $(".button.like").click(function(){
+                      $(".like .icon")
+                        .toggleClass("islike")
+                  });
+
+                });
+    </script>
+<button type="button" id="button1" onclick="clickprompt()">調用Android</button>
+<div class="ui message">
+  <i class="close icon" onclick="hiddenMessage()"></i>
+  <div class="header" style="font-family:'微軟正黑體'; font-size:150%">   
+   便宜賣房
+   <i class="tag icon" style="color:cornflowerblue"></i>
+  </div>
+  <br>
+  <p>198坪電梯豪宅</p>
+  <p>設施完善，安全無虞</p>
+  <p>歡迎看房!!!</p>
+  <p>地址：吉安鄉農會超市前</p>
+  <br>
+  <div class="extra content">
+      <div id="like" class="ui basic button like" onclick="store_object()">
+        <i class="like icon"></i>
+        收藏
+      </div>
+      <div class="ui basic button bullhorn">
+        <i class="bullhorn icon"></i>
+        檢舉
+      </div> 
+  </div>
+  
+</div>
+</body>
+</html>

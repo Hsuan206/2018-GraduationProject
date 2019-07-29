@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script src="semanticui/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%
+        }
+
+        .ui.message {
+            width: 80%;
+
+
+        }
+
+        .hand {
+
+            float: right;
+        }
+
+        .ui.basic.button.like {
+            font-family: "微軟正黑體";
+            font-weight: 800;
+            margin-right: -0.5px;
+
+        }
+
+        .ui.basic.button.bullhorn {
+            font-family: "微軟正黑體";
+            font-weight: 800;
+            float: right;
+        }
+
+        .islike {
+            color: red;
+        }
+
+        .isreport {
+            color: dodgerblue;
+        }
+
+        p {
+            font-family: "微軟正黑體";
+        }
+
+        .object,
+        .ad {
+            width: 70%;
+            margin-top: 10%;
+            margin-left: 15%;
+        }
+
+        .square {
+            width: 100px;
+            height: 100px;
+            background: rgb(204, 106, 167);
+        }
+    </style>
+    <meta charset="utf-8">
+    <script>
+        //專案初始化，Authentication後右方有個網路設定
+        var config = {
+            //apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+            authDomain: "fir-1-2b746.firebaseapp.com",
+            databaseURL: "https://fir-1-2b746.firebaseio.com",
+            projectId: "fir-1-2b746",
+            storageBucket: "fir-1-2b746.appspot.com",
+            messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+
+        // Android需要調用的方法
+        var userID, user;
+
+        //-------------------接收Android資料--------------------
+        function currentUser(msg) {
+            // 取得使用者ID
+            userID = msg;
+
+        }
+        //-------------------Android執行資料--------------------
+        function setModel() {
+            var model = document.getElementById("Model").children;
+            for (var i = 0; i < model.length; i++) {
+                model[i].setAttribute("id", i + 1);
+                console.log(model[i].id);
+            }
+        }
+
+
+        //-----------------傳遞js資料-----------------------
+
+        //點擊加好友:取得其他人的userId進行加好友
+        function object_addfriend(otherUserId) {
+
+            //方法一
+            window.ExtObj_addFriend.responseResult(otherUserId);
+        }
+        //點擊收藏:取得廣告物件id進行收藏
+        function ad_collection(objectId) {
+
+            //方法一
+            window.ExtObj_adCollection.responseResult(objectId);
+        }
+        //點擊收藏:取得優惠券id進行收藏
+        function coupon_collection(objectId) {
+
+            //方法一
+            window.ExtObj_couponCollection.responseResult(objectId);
+        }
+        //點擊檢舉：取得物件id進行檢舉
+        function object_report(objectId) {
+
+            window.ExtObj_report.responseResult(objectId);
+        }
+        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var passwordlength = 16;
+        function objIdrandom() {
+
+            var password = "";
+            var n = 0;
+            var randomnumber = 0;
+            while (n < passwordlength) {
+                n++;
+                randomnumber = Math.floor(characters.length * Math.random());
+                password += characters.substring(randomnumber, randomnumber + 1);
+            }
+            return password;
+        }
+        //根據經緯度換算成行政區
+        /*var district;
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=23.5,120.5&key=AIzaSyCjdc6BtYqyFzlpiReYJZ-ITaZ6-yK_HGo";
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                //district = myArr.results[0].address_components[3].long_name;
+                console.log(myArr);
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();*/
+
+        //創建物件
+        function createObject() {
+            // 存使用者ID
+
+            user = document.getElementById("currentUser");
+            user.innerHTML = userID;
+
+            // 資訊
+            var title = document.getElementById("ob_title").value;
+            var content = document.getElementById("ob_content").value;
+            var type = document.getElementById("ob_type").value;
+            //隨機亂數物件ID
+            var id = objIdrandom();
+            //模型
+            var model = document.getElementById("model_type");
+            var index = model.selectedIndex;
+            var model_id = model.options[index].getAttribute('id')
+
+            console.log("模型ID : " + model_id);
+
+
+
+            var object = new Array(title, content, type, id, model_id, lat, lon, district);
+            //var object = new Array(title,content,type,id,model_id);
+            window.ExtObj_createObject.responseResult(object);
+
+
+        }
+        function objArray() {
+
+            var arr = [];
+            var key = [];
+
+            var objectRef = firebase.database().ref().child('Object');
+            objectRef.on('value', function (objectsnapshot) {
+                objectsnapshot.forEach(function (childSnapshot) {
+                    var childData = childSnapshot.val();
+                    arr.push(childData);
+                    key.push(childSnapshot.key);
+
+                });
+
+            });
+            console.log(arr);
+            console.log(key);
+            for (var i = 0; i < key.length; i++) {
+
+                key[i][0] = arr[i];
+                //console.log(key);
+
+            }
+
+
+        }
+
+
+
+
+
+    </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+
+<body>
+
+    <div id="currentObject"></div>
+    <div id="currentUser"></div>
+    <div id="bug"></div>
+
+
+
+    <div class="ui message">
+        <i class="close icon"></i>
+        <div class="header" style="font-family:'微軟正黑體'; font-size:150%">
+            小瑄
+            <i class="female icon" style="color:rgb(252, 150, 201)"></i>
+        </div>
+        <br>
+        <p>FB：陳瑄</p>
+        <br>
+        <!--此物件id需要在創建物件時就要給他嵌入 此為直接填入-->
+        <div id="FDZQcGP1RjbfLACovlORVyYRXMJ2" class="extra content">
+            <!--object_addfriend(取得此物件使用者ID)-->
+            <button class="ui basic button like addfriend" onclick="object_addfriend(this.parentNode.id)">
+                <i class="like icon"></i>
+                加好友
+            </button>
+            <button class="ui basic button bullhorn report addfriend" onclick="object_report(this.parentNode.id)">
+                <i class="bullhorn icon"></i>
+                檢舉
+            </button>
+        </div>
+    </div>
+
+
+    <img src="https://firebasestorage.googleapis.com/v0/b/fir-1-2b746.appspot.com/o/ad_images%2FP_20180522_114727.jpg?alt=media&token=c81962f5-e22b-45fa-90e3-e6989eda6c81"
+        style="height:256px ; width:512px;"></img>
+    <!--要放入物件ID-->
+    <button id="ANODSRTXCICMDEHR" onclick="ad_collection(this.id)">收藏廣告</button>
+    <button id="JHTTBDVLXITRSKLY" onclick="coupon_collection(this.id)">收藏優惠券</button>
+
+    <div class="object">
+        <form class="ui form" name="reg"style="font-family:微軟正黑體">
+            標題：
+            <input class="ui input" id="ob_title" name="ob_title" type="text" placeholder="請輸入10字以內" required maxlength="10" style="font-family:微軟正黑體"/>
+            <br/> 內容：
+            <input class="ui input" id="ob_content" name="ob_title" type="text" placeholder="請輸入30字以內" style="font-family:微軟正黑體"/>
+            <br/> 類型：
+            <select class="ui fluid dropdown" id="ob_type" name="ob_type" rel="--" style="font-family:微軟正黑體">
+                <option value="--" >--</option>
+                <optgroup style="font-family:微軟正黑體">
+                    <option>交友</option>
+                    <option>揪團</option>
+                    <option>其他</option>
+                </optgroup>
+            </select>
+            <br/> 模型：
+            
+
+            
+            <br/>
+            <button class="ui primary button" id="OK" style="font-family:微軟正黑體" onclick="createObject()">確定</button>
+            <button class="ui basic button" id="cancel" style="font-family:微軟正黑體">取消</button>
+    
+        </form>
+
+    </div>
+
+
+
+
+</body>
+
+</html>

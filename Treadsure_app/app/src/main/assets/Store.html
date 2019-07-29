@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script src="semanticui/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.1.0/exif.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image-scale.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image-orientation.min.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%
+        }
+
+        .ui.message {
+            width: 80%;
+
+        }
+
+        .segment {
+            position: absolute;
+
+        }
+
+        .hand {
+
+            float: right;
+        }
+
+        .ui.basic.button.like {
+            font-family: "微軟正黑體";
+            font-weight: 800;
+            margin-right: -0.5px;
+
+        }
+
+        .ui.basic.button.bullhorn {
+            font-family: "微軟正黑體";
+            font-weight: 800;
+            float: right;
+        }
+
+        p {
+            font-family: "微軟正黑體";
+        }
+
+        .ad {
+            width: 70%;
+            margin-top: 10%;
+            margin-left: 15%;
+        }
+
+        .square {
+            width: 100px;
+            height: 100px;
+            background: rgb(204, 106, 167);
+        }
+    </style>
+    <meta charset="utf-8">
+    <script>
+        //專案初始化，Authentication後右方有個網路設定
+        var config = {
+            //apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+            authDomain: "fir-1-2b746.firebaseapp.com",
+            databaseURL: "https://fir-1-2b746.firebaseio.com",
+            projectId: "fir-1-2b746",
+            storageBucket: "fir-1-2b746.appspot.com",
+            messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+
+        // Android需要調用的方法
+        var userID, user;
+
+        //-------------------接收Android資料--------------------
+        function currentUser(msg) {
+            // 取得使用者ID
+            userID = msg;
+
+        }
+        //-------------------Android執行資料--------------------
+
+
+
+        //-----------------傳遞js資料-----------------------
+
+
+
+        //--------------------------------------------------
+
+        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var passwordlength = 16;
+        function objIdrandom() {
+
+            var password = "";
+            var n = 0;
+            var randomnumber = 0;
+            while (n < passwordlength) {
+                n++;
+                randomnumber = Math.floor(characters.length * Math.random());
+                password += characters.substring(randomnumber, randomnumber + 1);
+            }
+            return password;
+        }
+
+        function createCoupon() {
+
+            var coupon_id = objIdrandom()
+            var coupon_title = document.getElementById("coupon_title").value;
+            var coupon_content = document.getElementById("coupon_content").value;
+
+            //選擇行政區
+            //var coupon_district = document.getElementById("coupon_district").value;
+
+
+
+            var coupon = new Array(coupon_title, coupon_content, coupon_id, coupon_district);
+            //var coupon = new Array(coupon_title,coupon_content,coupon_id);
+            window.ExtObj_createCoupon.responseResult(coupon);
+        }
+
+        /*//根據經緯度換算成行政區
+        var district;
+        var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lon+"&key=AIzaSyCbCpe2veeZZT-ovYjPpDwS__SuxFg_BAs";
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var myArr = JSON.parse(this.responseText);
+                district = myArr.results[0].address_components[3].long_name;
+                
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();*/
+
+
+        //載入檔案
+        var img_base64;
+        var img_base64_mirror;
+
+        var loadFile = function (event) {
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var preview = document.getElementById('preview');
+                    img_base64 = reader.result;
+                    preview.src = img_base64;
+
+                    window.loadImage(preview.src, function (img) {
+                        if (img.type === "error") {
+                            console.log("無法載入:", img);
+                        } else {
+                            window.EXIF.getData(img, function () {
+                                var orientation = EXIF.getTag(this, "Orientation");
+                                var canvas = window.loadImage.scale(img, { orientation: orientation || 4, canvas: true });
+                                var p = document.getElementById('preview2');
+                                img_base64_mirror = canvas.toDataURL();
+                                p.src = img_base64_mirror;
+
+                            });
+                        }
+                    });
+
+
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+        };
+
+
+        //上傳到資料庫
+        function upload() {
+
+            user = document.getElementById("currentUser");
+            user.innerHTML = userID;
+            var ad_title = document.getElementById("ad_title").value;
+            var ad_content = document.getElementById("ad_content").value;
+            var ad_id = objIdrandom();
+            var storageRef = firebase.storage().ref().child("ad_images");
+            var file = document.getElementById('ad_upload').files[0];
+            var name = ad_id;
+            var metadata = {
+                contentType: file.type
+            };
+            var uploadTask = storageRef.child(name).put(file, metadata);
+
+            uploadTask.on('state_changed',
+                function (snapshot) {
+                    //取得進度(bytes)
+                    // (在傳送的/總量) * 100 算成百分比
+                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById("percent").innerHTML = '上傳 ' + progress + '% 完成';
+                    switch (snapshot.state) {
+                        case 'paused':
+                            document.getElementById("result").innerHTML = "暫停上傳";
+                            break;
+                        case 'running':
+                            document.getElementById("result").innerHTML = "上傳進行中";
+                            break;
+                    }
+                }, function (error) {
+                    // A full list of error codes is available at
+                    // https://firebase.google.com/docs/storage/web/handle-errors
+                    switch (error.code) {
+                        case 'storage/unauthorized':
+                            document.getElementById("result").innerHTML = "沒有權限";
+                            // 沒有權限存取物件
+                            break;
+                        case 'storage/canceled':
+                            document.getElementById("result").innerHTML = "使用者取消";
+                            // 使用者取消上傳
+                            break;
+                        case 'storage/unknown':
+                            document.getElementById("result").innerHTML = "不明錯誤";
+                            // Unknown error occurred, inspect error.serverResponse
+                            break;
+                    }
+                }, function () {
+                    // 上傳成功
+                    uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+
+                        document.getElementById("result").innerHTML = downloadURL;
+
+
+                        var ad_object = new Array(ad_title, ad_content, downloadURL, ad_id, lat, lon);
+                        //var ad_object = new Array(ad_title,ad_content,downloadURL,ad_id);
+                        window.ExtObj_createAd.responseResult(ad_object);
+                    });
+                });
+        };
+    </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+
+<body>
+
+    <div id="currentObject"></div>
+    <div id="currentUser"></div>
+    <div id="bug"></div>
+
+    <div class="coupon" style="font-family:微軟正黑體">
+        <div class="ui message" style="font-family:微軟正黑體">
+            <i class="close icon" onclick=""></i>
+            <div class="header" style="font-family:微軟正黑體 ; font-size:150%"> 優惠券資訊
+            </div>
+            <br>
+            <form class="ui form" name="reg">
+                標題：
+                <input class="ui input" id="coupon_title" name="coupon_title" type="text" placeholder="請輸入10字以內" required maxlength="10"
+                />
+                <br/> 內容：
+                <input class="ui input" id="coupon_content" name="coupon_content" type="text" placeholder="請輸入30字以內" />
+                <br/> 行政區：
+                <div class="field" style="font-family:微軟正黑體 ;">
+                    <select class="ui fluid dropdown"  style="font-family:微軟正黑體;">
+                        <option value="">請選擇行政區</option>
+                        <option value="1">臺北市</option>
+                        <option value="2">新北市</option>
+                        <option value="3">基隆市</option>
+                        <option value="4">桃園市</option>
+                        <option value="5">新竹縣</option>
+                        <option value="6">新竹市</option>
+                        <option value="7">苗栗縣</option>
+                        <option value="8">臺中市</option>
+                        <option value="9">南投縣</option>
+                        <option value="10">彰化縣</option>
+                        <option value="11">雲林縣</option>
+                        <option value="12">嘉義縣</option>
+                        <option value="13">嘉義市</option>
+                        <option value="14">臺南市</option>
+                        <option value="15">高雄市</option>
+                        <option value="16">屏東縣</option>
+                        <option value="17">宜蘭縣</option>
+                        <option value="18">花蓮縣</option>
+                        <option value="19">臺東縣</option>
+                        <option value="20">澎湖縣</option>
+                        <option value="21">金門縣</option>
+                        <option value="23">連江縣</option>
+                    </select>
+                </div>
+                <br>
+                <button class="ui primary button" id="coupon_OK" onclick="createCoupon()">確定</button>
+                <button class="ui basic button" id="coupon_cancel">取消</button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div id="ad">
+        <div class="ui message" style="font-family:微軟正黑體">
+            <i class="close icon" onclick=""></i>
+            <div class="header" style="font-family:微軟正黑體 ; font-size:150%"> 廣告資訊
+            </div>
+            <br>
+            <form class="ui form" name="reg" style="font-family:微軟正黑體">
+                標題：
+                <input class="ui input" id="ad_title" name="ad_title" type="text" placeholder="請輸入10字以內" required maxlength="10" />
+                <br/> 內容：
+                <input class="ui input" id="ad_content" name="ad_content" type="text" placeholder="請輸入30字以內" />
+                <br/>
+            </form>
+            <br>
+            <img id="preview" style="max-width: 50%; height: auto;">
+            <br>
+            <br> 上傳廣告圖：
+            <br>
+            <label for="file" class="ui icon button" style="font-family:微軟正黑體">
+                <i class="file icon"></i>
+                選擇檔案</label>
+            <input type="file" id="file" accept="image/*" onchange="loadFile(event)" style="display:none">
+            <br>
+            <br>
+            <button class="ui primary button" id="ad_OK" onclick="upload()" style="font-family:'微軟正黑體';">確定</button>
+            <button class="ui instagram button" onclick="btn()" style="font-family:微軟正黑體">預覽</button>
+            <button class="ui basic button" id="ad_cancel" style="font-family:微軟正黑體">取消</button>
+            <br>
+            <p id="percent"></p>
+            <p id="result"></p>
+
+
+
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

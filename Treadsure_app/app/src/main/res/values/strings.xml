@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Treadsure</string>
+
+    <string name="facebook_application_id" translatable="false">199414047551247</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">199414047551247</string>
+    <string-array name="role">
+        <item>一般使用者</item>
+        <item>店家</item>
+    </string-array>
+
+    <string-array name="city">
+        <item>請選擇居住地</item>
+        <item>台北市</item>
+        <item>新北市</item>
+        <item>桃園市</item>
+        <item>台中市</item>
+        <item>高雄市</item>
+        <item>基隆市</item>
+        <item>新竹縣</item>
+        <item>苗栗縣</item>
+        <item>彰化縣</item>
+        <item>南投縣</item>
+        <item>雲林縣</item>
+        <item>嘉義縣</item>
+        <item>屏東縣</item>
+        <item>宜蘭縣</item>
+        <item>花蓮縣</item>
+        <item>台東縣</item>
+        <item>澎湖縣</item>
+        <item>金馬地區</item>
+
+    </string-array>
+    <string-array name="store_city">
+        <item>請選擇縣市</item>
+        <item>台北市</item>
+        <item>新北市</item>
+        <item>桃園市</item>
+        <item>台中市</item>
+        <item>高雄市</item>
+        <item>基隆市</item>
+        <item>新竹縣</item>
+        <item>苗栗縣</item>
+        <item>彰化縣</item>
+        <item>南投縣</item>
+        <item>雲林縣</item>
+        <item>嘉義縣</item>
+        <item>屏東縣</item>
+        <item>宜蘭縣</item>
+        <item>花蓮縣</item>
+        <item>台東縣</item>
+        <item>澎湖縣</item>
+        <item>金馬地區</item>
+
+
+    </string-array>
+    <string name="title_activity_navigation">Navigation</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="default_status">Hello World!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_store_navigation">Store_navigation</string>
+</resources>

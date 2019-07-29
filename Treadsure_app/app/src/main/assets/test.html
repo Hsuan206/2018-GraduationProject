@@ -1,0 +1,73 @@
+
+<style>
+  body { margin: 0; }
+  #video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+}
+
+canvas {position: fixed; width: 100%; height: 100% }
+</style>
+<video id="video" autoplay></video>
+<script src="js/three.js"></script>
+<script>
+
+// Prefer camera resolution nearest to 1280x720.
+var front = false;
+
+var constraints = { video: {   facingMode: (front? "user" : "environment"), width: 1280, height: 720 } }; 
+navigator.mediaDevices.getUserMedia(constraints)
+.then(function(mediaStream) {
+  var video = document.querySelector('video');
+  video.srcObject = mediaStream;
+  video.onloadedmetadata = function(e) {
+    video.play();
+  };
+})
+.catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+
+
+var scene,camera,render,geometry,material,cube;
+			init();
+			function init(){
+			//新增場景
+			scene = new THREE.Scene();
+			
+		
+
+
+            //新增相機
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            //新增渲染
+            renderer = new THREE.WebGLRenderer( { alpha: true } );
+            renderer.setClearColor( 0x000000, 0 );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+			//新增BoxGeometry在座標(0,0,0)
+            geometry = new THREE.BoxGeometry( 1,1,1 );
+			//用材料MeshBasicMaterial上顏色0x00ff00
+            material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            //把material上到geometry
+			cube = new THREE.Mesh( geometry, material );
+            //場景增加cube
+			scene.add( cube );
+			
+			//防止相機跟cube(0,0,0)重疊
+            camera.position.z = 5;
+		}
+
+            function animate() {
+	            requestAnimationFrame( animate );
+				//cube.rotation.y += 0.01;
+				//cube.rotation.x += 0.01;
+				
+				//cube.rotation.z += 0.01;
+	            renderer.render( scene, camera );
+            }
+            animate();
+
+
+</script>

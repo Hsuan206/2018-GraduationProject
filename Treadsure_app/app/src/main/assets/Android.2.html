@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.min.css">
+        <script
+          src="https://code.jquery.com/jquery-3.1.1.min.js"
+          integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+          crossorigin="anonymous"></script>
+        <script src="semanticui/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="semanticui/semantic.css">
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="createObject.js"></script>
+    <script type="text/javascript" src="semanticui/semantic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.0.0/firebase.js"></script>
+    
+    <style>
+        html,body{  
+            margin:0;  
+            padding:0;  
+            height:100%  
+        }  
+        .ui.message {
+            width: 80%;
+          
+            position: absolute;
+  
+          }
+          .segment {
+              position: absolute;
+              
+          }
+    
+        .hand {
+
+          float: right;
+        }
+        .ui.basic.button.like {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          margin-right: -0.5px;
+
+        }
+        .ui.basic.button.bullhorn {
+          font-family: "微軟正黑體";
+          font-weight: 800;
+          float: right;
+        }
+        .islike{
+          color: red;
+        }
+        .isreport{
+            color:dodgerblue;
+        }
+        p {
+          font-family: "微軟正黑體";
+        }
+
+        .object,.ad {
+          width: 70%;
+          margin-top: 10%;
+          margin-left: 15%;
+        }
+        .square {
+          width: 100px;
+          height: 100px;
+          background: rgb(204, 106, 167);
+        }
+
+
+        </style>
+    <meta charset="utf-8">
+    <script>
+        //專案初始化，Authentication後右方有個網路設定
+        var config = {
+        //apiKey: "AIzaSyCzaYpvOmLYeERBRCcO8M_e4ryAE57nLB8",
+        authDomain: "fir-1-2b746.firebaseapp.com",
+        databaseURL: "https://fir-1-2b746.firebaseio.com",
+        projectId: "fir-1-2b746",
+        storageBucket: "fir-1-2b746.appspot.com",
+        messagingSenderId: "772658594851"
+        };
+        firebase.initializeApp(config);
+
+        // Android需要調用的方法
+        var objId,userID;
+        var user,currentstate = '不是朋友',reportstate = "未檢舉",collectionstate = "未收藏";
+
+        //-------------------接收Android資料--------------------
+        function currentUser(msg) {
+
+            // 取得使用者ID
+            userID = msg;
+
+            var userRef = firebase.database().ref().child('User');
+            userRef.on('value',function(usersnapshot) {
+                if(usersnapshot.hasChild(msg)){
+                    //user = document.getElementById("currentUser");
+                    //user.innerHTML = msg;
+                    var collectionRef = firebase.database().ref().child('Collection').child(msg);
+                    var reportRef = firebase.database().ref().child('Report');
+                    var friendreqRef = firebase.database().ref().child('Friend_req').child(msg);
+                    var friendRef = firebase.database().ref().child('Friends').child(msg);
+                    var objectRef = firebase.database().ref().child('Object');
+                    objectRef.on('value',function(snapshot) {
+                        
+                        if(currentstate == '不是朋友'){
+                            $(".like.addfriend").html("");
+                            
+                            var text = $(".like.addfriend").html('<i class="like icon"></i>加好友');
+                            $(".like.addfriend").append(text);
+                            var otheruser = snapshot.child('3').child('user').val()
+
+                            friendreqRef.on('value',function(datasnapshot) {
+
+                                if(datasnapshot.hasChild(otheruser)) {
+                                    var otheruserID = datasnapshot.child(otheruser);
+                                    if((otheruserID.child('請求類型').val()) == '送出') {
+                                        currentstate = '已送出邀請';
+                                        $(".like.addfriend").html("");
+                                        var text = $(".like.addfriend").html('<i class="like icon islike"></i>取消邀請');
+                                        $(".like.addfriend").append(text);
+                                    }
+                                    else {
+                                        currentstate = '已接受邀請';
+                                    }
+
+                                }
+                                else {
+                                    friendRef.on('value',function(datasnapshot) {
+                                        if(datasnapshot.hasChild(otheruser)) {
+                                            currentstate = '朋友'
+                                            $(".like.addfriend").html("");
+                                            var text = $(".like.addfriend").html('<i class="like icon islike"></i>解除好友');
+                                            $(".like.addfriend").append(text);
+                                        }
+                                    });
+                                }
+                            });
+                            
+                        }
+                        
+                    });
+
+                    objectRef.on('value', function(objsnapshot) {
+                        objsnapshot.forEach(function(objchildSnapshot) {  
+                            var key = objchildSnapshot.key;
+                            reportRef.on('value',function(reportsnapshot) {
+                            
+                                if(reportsnapshot.hasChild(key)) {
+                                    
+                                    $("#"+key+" > .report ").html("");
+                                    var text = $("#"+key+" > .report ").html('<i class="bullhorn icon isreport"></i>取消檢舉');
+                                    $("#"+key+" > .report ").append(text);
+                                    reportstate = "已檢舉";
+                                    
+                                }    
+                                else {
+                                    $("#"+key+" > .report ").html("");
+                                    var text = $("#"+key+" > .report ").html('<i class="bullhorn icon"></i>檢舉');
+                                    $("#"+key+" > .report ").append(text);
+                                    reportstate = "未檢舉";
+                                }
+                                
+                            });
+                            collectionRef.on('value',function(collectionsnapshot) {
+                                if(collectionsnapshot.hasChild(key)) {
+                                    $("#"+key+" > .like").html("");
+                                    var text = $("#"+key+" > .like").html('<i class="like icon islike"></i>取消收藏');
+                                    $("#"+key+" > .like").append(text);
+                                    collectionstate = "已收藏"
+                                }
+                                else {
+                                /* $("#"+key+" > .like").html("");
+                                    var text = $("#"+key+" > .like").html('<i class="like icon"></i>收藏');
+                                    $("#"+key+" > .like").append(text);*/
+                                    collectionstate = "未收藏"
+                                }
+                            });
+                        });
+                    });
+                }
+                else {
+                    user = document.getElementById("currentUser");
+                    user.innerHTML = msg;
+                }
+            });
+            
+        }
+                 $(".ui .close").click(function(){
+                      $(this)
+                        .closest('.message')
+                        .transition('fade');
+                  });
+                  $(".like.addfriend").click(function(){
+                      
+                        if((($(".like.addfriend").text()).indexOf("取消邀請")>-1)|| (($(".like.addfriend").text()).indexOf("解除好友")>-1)){
+                            
+                            $(".like.addfriend").html("");
+                    
+                            var text = $(".like.addfriend").html('<i class="like icon"></i>加好友');
+                            $(".like.addfriend").append(text);
+                            currentstate = '不是朋友'
+                            
+                            //objectId();
+                        }
+                        
+                        
+                  });
+                  $(".like.collect").click(function(){
+                      
+                      if(collectionstate == "未收藏"){
+                            $(this).html("");
+                            var text = $(this).html('<i class="like icon"></i>收藏');
+                            $(this).append(text);
+                        }
+                        else {
+                            
+                            $(this).html("");
+                    
+                            var text = $(this).html('<i class="like icon islike"></i>取消收藏');
+                            $(this).append(text);
+                            //objectId();
+                        }
+                  });
+                  $(".report").click(function(){
+                      
+                      if(reportstate == "未檢舉"){
+                        $(this).html("");
+                            var text = $(this).html('<i class="bullhorn icon isreport"></i>取消檢舉');
+                            $(this).append(text);
+                        }
+                        else {
+                            
+                            $(this).html("");
+                    
+                            var text =  $(this).html('<i class="bullhorn icon"></i>檢舉');
+                            $(this).append(text);
+                            //objectId();
+                        }
+
+                  });
+       
+        //-------------------Android執行資料--------------------
+        function setModel() {
+            var model = document.getElementById("Model").children;
+            for(var i=0;i<model.length;i++) {
+                model[i].setAttribute("id",i+1);
+                console.log(model[i].id);
+            }
+        }
+
+
+        //-----------------傳遞js資料-----------------------
+        //點擊某個物件id發送好友邀請
+       /* function objectId(id) {
+           
+            
+            //方法一
+            window.ExtObj_addFriend.responseResult(id.id);
+        }*/
+
+        //點擊加好友:取得其他人的userId進行加好友
+        function object_addfriend(otherUserId) {
+            
+           //方法一
+           window.ExtObj_addFriend.responseResult(otherUserId);
+       }
+       //點擊收藏:取得物件id進行收藏
+       function object_collection(objectId) {
+            
+        //方法一
+        window.ExtObj_collection.responseResult(objectId);
+        }
+        //點擊檢舉：取得物件id進行檢舉
+        function object_report(objectId) {
+
+            window.ExtObj_report.responseResult(objectId);
+        }
+        /*function createObject() {
+ 
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(showPosition);
+            } else {
+                document.getElementById("bug").innerHTML = "error";
+            }
+
+        }*/
+    
+        
+        
+        /*function showPosition(position) {
+        
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var title = document.getElementById("ob_title").value;
+            var content = document.getElementById("ob_content").value;
+            var type = document.getElementById("ob_type").value; 
+            //此物件ID日後設給物件就好
+            var id = objIdrandom();
+
+            var object = new Array(title,content,type,latitude.toString(),longitude.toString(),id);
+            window.ExtObj_createObject.responseResult(object);
+        }*/
+        /*function callAndroid(){
+            //對象映射，調用test等於調用Android
+                test.hello("JS調用了android中的hello方法");
+            }
+
+        function clickprompt(){
+            var result = prompt("js://webview?arg1=111&arg2=222");
+            alert("demo " + result);
+        }
+
+        function clickCreateOb() {
+            var result = prompt("js://createOb?arg1=111&arg2=222");
+            alert("demo " + result);
+            
+        }*/
+        
+        </script>
+
+</head>
+
+<!-- 點擊按鈕  -->
+<body>
+
+<div id="currentObject"></div>
+<div id="currentUser"></div>
+<div id="bug"></div>  
+
+<div class="ui message">
+    <i class="close icon" ></i>
+    <div class="header" style="font-family:'微軟正黑體'; font-size:150%">
+        小瑄
+        <i class="female icon" style="color:rgb(252, 150, 201)"></i>
+    </div>
+    <br>
+    <p>FB：陳瑄</p>
+    <br>
+    <!--此物件id需要在創建物件時就要給他嵌入 此為直接填入-->
+    <div id="orIk8AUb1HNQUANPMVFGHoPzha83" class="extra content">
+        <!--object_addfriend(取得此物件使用者ID)-->
+        <button  class="ui basic button like addfriend" onclick="object_addfriend(this.parentNode.id)">
+            <i class="like icon"></i>
+            加好友
+        </button>
+        <button class="ui basic button bullhorn report addfriend" onclick="object_report(this.parentNode.id)" >
+            <i class="bullhorn icon"></i>
+            檢舉
+        </button>
+    </div>
+
+</div>
+<!--
+<div class="ui message">
+    <i class="close icon" onclick="hiddenMessage()"></i>
+    <div class="header" style="font-family:'微軟正黑體'; font-size:150%">   
+     便宜賣房
+     <i class="tag icon" style="color:cornflowerblue"></i>
+    </div>
+    <br>
+    <p>198坪電梯豪宅</p>
+    <p>設施完善，安全無虞</p>
+    <p>歡迎看房!!!</p>
+    <p>地址：吉安鄉農會超市前</p>
+    <br>
+    此物件id需要在創建物件時就要給他嵌入 此為直接填入
+    
+    <div id="4" class="extra content">
+        
+        <button class="ui basic button like collect" onclick="object_collection(this.parentNode.id)">
+            <i class="like icon"></i>
+            收藏
+        </button>
+        <button class="ui basic button bullhorn report collect" onclick="object_report(this.parentNode.id)" >
+            <i class="bullhorn icon"></i>
+            檢舉
+        </button> 
+    </div>
+    
+</div>
+-->
+<div class="ui red circular segment">
+    <div id="4" class="content">
+
+      <i class="right floated close icon"></i>
+      <div class="ui header" style="font-family:'微軟正黑體'; font-size:150%">便宜賣房</div>
+
+      <div class="description"style="font-family:'微軟正黑體'; font-size:10px">
+           
+            <p>歡迎看房!!!</p>
+            <p>地址：吉安鄉農會超市前</p>
+            <br>
+      </div>
+      <i class="right floated like icon" onclick="object_collection(this.parentNode.id)" ></i>
+      <i class="bullhorn icon" onclick="object_report(this.parentNode.id)"></i>
+    </div>
+
+</div>
+
+<div class="object">
+    <form name="reg" ></form>
+      標題：
+      <input id="ob_title" name="ob_title" type="text" placeholder="請輸入10字以內" required maxlength="10"/><br/>
+      內容：
+      <input id="ob_content" name="ob_title" type="text"  placeholder="請輸入30字以內"/><br/>
+      類型：
+      <select id="ob_type" name="ob_type" rel="--">
+        <option value="--">--</option>
+        <optgroup>
+          <option>交友</option>
+          <option>揪團</option>
+          <option>其他</option>
+        </optgroup>
+      </select><br/>
+      模型：
+      <select id="model_type" name="model_type" rel="--">
+        <option value="--">--</option>
+        <optgroup id="Model">
+          <option>鞋子1</option>
+          <option>鞋子2</option>
+          <option>鞋子3</option>
+        </optgroup>
+      </select><br/>
+      <button id="OK" onclick="createObject()">OK</button>
+      <button id="cancel" >取消</button>
+      
+      <div> </div>
+    </form>
+
+</div>
+
+<div class="ad">
+    <form name="reg" ></form>
+      標題：
+      <input id="ob_title" name="ob_title" type="text" placeholder="請輸入10字以內" required maxlength="10"/><br/>
+      內容：
+      <input id="ob_content" name="ob_title" type="text"  placeholder="請輸入30字以內"/><br/>
+      顯示區域：
+      <select id="ob_type" name="ob_type" rel="--">
+        <option value="--">--</option>
+        <optgroup>
+          <option>交友</option>
+          <option>揪團</option>
+          <option>其他</option>
+        </optgroup>
+      </select><br/>
+     
+      <button id="upload" onclick="">上傳廣告圖</button>
+      <button id="OK" onclick="">確定
+      </button>
+      <button id="cancel" >取消</button>
+      
+      <div> </div>
+    </form>
+
+  </div>
+
+  
+
+</body>
+</html>
